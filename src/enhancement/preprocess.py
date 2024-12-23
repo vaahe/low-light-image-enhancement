@@ -30,7 +30,10 @@ def adjust_color_balance(image):
     return cv2.cvtColor(result, cv2.COLOR_LAB2BGR) 
 
 def is_low_light(image):
-    """ Check if image is low light """
+    """ Check if image is low light using histogram """
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    mean = np.mean(gray)
-    return mean < 50
+    hist = cv2.calcHist([gray], [0], None, [256], [0, 256])
+    hist = hist / hist.sum()
+    low_light_percentage = np.sum(hist[:50]) * 100 
+    low_light_threshold = 40
+    return low_light_percentage > low_light_threshold
